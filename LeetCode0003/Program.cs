@@ -26,13 +26,86 @@ namespace LeetCode0003
      *请注意，你的答案必须是 子串 的长度，"pwke" 是一个子序列，不是子串。
      */
 
+    public class Solution_Bak1
+    {
+        public int LengthOfLongestSubstring(string s)
+        {
+            if (string.IsNullOrEmpty(s))
+            { return 0; }
+
+            if (s.Length == 1)
+            { return 1; }
+
+            var max_result_length = 0;
+            var result = new Dictionary<string, int>();
+
+            for (int i = 0; i < s.Length; i++)
+            {
+                for (int j = i; j < s.Length; j++)
+                {
+                    Console.WriteLine((int)s[j]);
+                    var temp = s[j].ToString();
+                    if (result.ContainsKey(temp))
+                    {
+                        var str = "";
+                        foreach (KeyValuePair<string, int> item in result)
+                        { str += string.Format("{0}:{1},", item.Key, item.Value); }
+                        Console.WriteLine(str);
+                        result.Clear();
+                        break;
+                    }
+                    else
+                    {
+                        result.Add(temp, i);
+                        if (max_result_length < result.Count)
+                        { max_result_length = result.Count; }
+                    }
+                }
+
+                if (max_result_length == s.Length)
+                { break; }
+            }
+            return max_result_length;
+        }
+    }
+
     public class Solution
     {
         public int LengthOfLongestSubstring(string s)
         {
-            var result = new Dictionary<string, string>();
+            if (string.IsNullOrEmpty(s))
+            { return 0; }
 
-            return 0;
+            if (s.Length == 1)
+            { return 1; }
+
+            var maxLen = 0;
+            var thisLen = 0;
+            var previous = 0;//起始位置下标
+            var indexs = new int[128];//字符最后出现的位置
+            for (int i = 0; i < 128; i++)
+            { indexs[i] = -1; }
+
+            for (int i = 0; i < s.Length; i++)
+            {
+                var ch = (int)s[i];
+                var index = indexs[ch];
+                if (index >= previous)
+                {
+                    thisLen = i - previous;
+                    if (thisLen > maxLen)
+                    { maxLen = thisLen; }
+
+                    previous = index + 1;
+                    Console.WriteLine(previous);
+                }
+                indexs[ch] = i;
+            }
+            thisLen = s.Length - previous;
+            if (thisLen > maxLen)
+            { maxLen = thisLen; }
+
+            return maxLen;
         }
     }
 
@@ -40,10 +113,10 @@ namespace LeetCode0003
     {
         static void Main(string[] args)
         {
-            var test = "abcabcbb";
+            var test = "cabcdefab";
             var s = new Solution();
             var result = s.LengthOfLongestSubstring(test);
-            Console.WriteLine(result);
+            Console.WriteLine(string.Format("max={0}", result));
             Console.ReadKey();
         }
     }
